@@ -1,0 +1,113 @@
+@media print {
+    /* Esconder elementos desnecessários */
+    nav, 
+    .btn,
+    footer,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Configurações gerais da página */
+    @page {
+        size: A4;
+        margin: 1cm;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-size: 10pt;
+        line-height: 1.2;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Estilo das tabelas */
+    .print-table {
+        width: 100%;
+        margin-bottom: 8px;
+        border-collapse: collapse;
+        page-break-inside: avoid;
+    }
+
+    .print-table td {
+        padding: 3px;
+        border: 1px solid #000;
+        font-size: 9pt;
+    }
+
+    .print-table strong {
+        font-weight: bold;
+        font-size: 9pt;
+    }
+
+    /* Layout de duas colunas para o fechamento */
+    .print-section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        page-break-inside: avoid;
+    }
+
+    .print-column {
+        width: 48%;
+    }
+
+    .print-column h5 {
+        font-size: 10pt;
+        margin: 5px 0;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    /* Caixa de observações */
+    .obs-box {
+        border: 1px solid #000;
+        padding: 5px;
+        min-height: 40px;
+        margin-top: 5px;
+        font-size: 9pt;
+    }
+
+    /* Ajustes específicos */
+    h2 {
+        font-size: 14pt;
+        margin: 0 0 10px 0;
+    }
+
+    /* Remover cores e sombras */
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+    }
+
+    /* Forçar impressão de fundos */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Estilos para autorizações */
+    .mt-4 {
+        margin-top: 20px;
+    }
+
+    .print-table td[colspan="3"] {
+        padding: 8px;
+    }
+
+    .print-table td[style*="text-align: center"] {
+        background-color: #f0f0f0;
+        font-weight: bold;
+    }
+
+    span[style*="color: red"] {
+        font-weight: bold;
+    }
+}

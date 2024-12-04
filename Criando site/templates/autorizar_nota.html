@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Autorizar Nota #{{ nota.numero }}</h2>
+            <p class="text-muted">Revise os dados e autorize a nota</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Detalhes da Nota</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Motorista:</strong> {{ nota.motorista }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Placa:</strong> {{ nota.placa_veiculo }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Produtor:</strong> {{ nota.produtor }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Data:</strong> {{ nota.data_criacao.strftime('%d/%m/%Y') }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong>Valor Total:</strong> R$ {{ "%.2f"|format(nota.calcular_valor_total()) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Autorizar Nota #{{ nota.numero }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="senha" class="form-label">Digite sua senha para confirmar</label>
+                            <input type="password" class="form-control" id="senha" name="senha" required>
+                            <div class="invalid-feedback">
+                                Por favor, digite sua senha.
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="assinatura" class="form-label">Assinatura Digital</label>
+                            <input type="text" class="form-control" id="assinatura" name="assinatura" required
+                                   placeholder="Digite seu nome completo">
+                            <div class="invalid-feedback">
+                                Por favor, digite sua assinatura.
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('ver_nota', id=nota.id) }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-sign">
+                                <i class="fas fa-signature"></i> Assinar e Autorizar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Informações Adicionais</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><i class="fas fa-info-circle"></i> Ao autorizar esta nota:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> A nota será marcada como autorizada</li>
+                        <li><i class="fas fa-check text-success"></i> Sua assinatura digital será registrada</li>
+                        <li><i class="fas fa-check text-success"></i> A nota será enviada para aprovação financeira</li>
+                    </ul>
+                    <hr>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Esta ação não pode ser desfeita.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.alert {
+    margin-bottom: 0;
+}
+
+.fas {
+    margin-right: 0.5rem;
+}
+
+.list-unstyled li {
+    margin-bottom: 0.5rem;
+}
+
+.btn-sign {
+    background-color: #007bff;
+    color: #ffffff;
+    border-color: #007bff;
+}
+
+.btn-sign:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+</style>
+
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

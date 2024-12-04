@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Notas Autorizadas - Setor Financeiro</h2>
+            <p class="text-muted">Gerencie as notas que foram autorizadas e aguardam aprovação financeira</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Data Autorização</th>
+                                    <th>Autorizado Por</th>
+                                    <th>Produtor</th>
+                                    <th>Valor Total</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for nota in notas %}
+                                <tr>
+                                    <td>{{ nota.numero }}</td>
+                                    <td>{{ nota.data_autorizacao.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>{{ nota.assinatura_autorizador }}</td>
+                                    <td>{{ nota.produtor }}</td>
+                                    <td>R$ {{ "%.2f"|format(nota.calcular_valor_total()) }}</td>
+                                    <td>
+                                        {% if not nota.aprovado_financeiro %}
+                                            <a href="{{ url_for('aprovar_financeiro', id=nota.id) }}" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check"></i> Aprovar
+                                            </a>
+                                        {% else %}
+                                            <span class="badge bg-success">Aprovado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" onclick="verDetalhes({{ nota.id }})">
+                                            Detalhes
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Nenhuma nota autorizada encontrada.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Aprovação -->
+<div class="modal fade" id="modalAprovar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Aprovar Nota</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAprovacao" method="POST">
+                    <div class="mb-3">
+                        <label for="observacoes" class="form-label">Observações (opcional)</label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="confirmarAprovacao()">Confirmar Aprovação</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let notaAtual = null;
+
+function aprovarNota(id) {
+    notaAtual = id;
+    new bootstrap.Modal(document.getElementById('modalAprovar')).show();
+}
+
+function confirmarAprovacao() {
+    const form = document.getElementById('formAprovacao');
+    const formData = new FormData(form);
+    
+    fetch(`/aprovar_financeiro/${notaAtual}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erro ao aprovar nota.');
+        }
+    });
+}
+
+function verDetalhes(id) {
+    window.location.href = `/ver_nota/${id}`;
+}
+</script>
+
+<style>
+.card {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.7em;
+}
+
+.btn-sm {
+    margin: 0 0.2rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Aprovar Nota #{{ nota.numero }} - Financeiro</h2>
+            <p class="text-muted">Revise os dados e aprove a nota</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Detalhes da Nota</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Motorista:</strong> {{ nota.motorista }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Placa:</strong> {{ nota.placa_veiculo }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Produtor:</strong> {{ nota.produtor }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Data:</strong> {{ nota.data_criacao.strftime('%d/%m/%Y') }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Valor Total:</strong> R$ {{ "%.2f"|format(nota.calcular_valor_total()) }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Autorizado por:</strong> {{ nota.autorizado_por_usuario.nome_completo if nota.autorizado_por_usuario else 'N/A' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Aprovação Financeira</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="formAprovacao">
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha de Aprovação</label>
+                            <input type="password" class="form-control" id="senha" name="senha" required>
+                            <div class="form-text">Digite sua senha para confirmar a aprovação.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                            <div class="form-text">Adicione observações relevantes para o setor financeiro.</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('financeiro') }}" class="btn btn-secondary">Voltar</a>
+                            <button type="submit" class="btn btn-success">Aprovar Nota</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Informações Adicionais</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><i class="fas fa-info-circle"></i> Ao aprovar esta nota:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> A nota será marcada como aprovada pelo financeiro</li>
+                        <li><i class="fas fa-check text-success"></i> Suas observações serão registradas</li>
+                        <li><i class="fas fa-check text-success"></i> A nota será finalizada</li>
+                    </ul>
+                    <hr>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Esta ação não pode ser desfeita.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+</style>
+{% endblock %}

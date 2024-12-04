@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Notas Incompletas</h2>
+        <p>Notas que precisam ser completadas ou aprovadas:</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Data</th>
+                        <th>Produtor</th>
+                        <th>Tipo de Ave</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nota in notas %}
+                    <tr>
+                        <td>{{ nota.numero }}</td>
+                        <td>{{ nota.data_criacao.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ nota.produtor }}</td>
+                        <td>{{ nota.tipo_ave }}</td>
+                        <td>
+                            {% if not nota.autorizada %}
+                                <span class="badge bg-warning">Pendente Autorização</span>
+                            {% endif %}
+                            {% if not nota.aprovado_financeiro %}
+                                <span class="badge bg-info">Pendente Aprovação Financeira</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('editar_nota_incompleta', id=nota.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="{{ url_for('ver_nota', id=nota.id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="excluirNota({{ nota.id }})">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhuma nota incompleta encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function excluirNota(id) {
+    if (confirm('Tem certeza que deseja excluir esta nota? Esta ação não pode ser desfeita.')) {
+        fetch(`/api/excluir_nota/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Erro ao excluir nota.');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

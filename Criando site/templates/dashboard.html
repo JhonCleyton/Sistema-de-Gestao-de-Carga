@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-background">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" class="dashboard-logo" alt="Logo">
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Bem-vindo ao Sistema de Recebimento de Aves</h2>
+        <p>Selecione uma opção abaixo para começar.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Nova Nota</h5>
+                <p class="card-text">Criar uma nova nota de recebimento de aves.</p>
+                <a href="{{ url_for('nova_nota') }}" class="btn btn-primary">Criar Nova Nota</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Lista de Notas</h5>
+                <p class="card-text">Visualizar todas as notas cadastradas.</p>
+                <a href="{{ url_for('lista_notas') }}" class="btn btn-primary">Ver Notas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Buscar Notas</h5>
+                <p class="card-text">Pesquisar notas por número, motorista ou placa.</p>
+                <a href="{{ url_for('buscar_notas') }}" class="btn btn-primary">Buscar</a>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.role == 'admin' %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Autorização</h5>
+                <p class="card-text">Autorizar notas com assinatura digital.</p>
+                <a href="{{ url_for('lista_notas') }}?status=pendente" class="btn btn-success">Autorizar Notas</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.role == 'financeiro' %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Financeiro</h5>
+                <p class="card-text">Aprovar notas autorizadas.</p>
+                <a href="{{ url_for('financeiro') }}" class="btn btn-info">Área Financeira</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.dashboard-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.1;
+}
+
+.dashboard-logo {
+    max-width: 50%;
+    max-height: 50%;
+    filter: grayscale(100%);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+    margin-bottom: 1rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.btn {
+    width: 100%;
+    padding: 0.5rem 1rem;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}

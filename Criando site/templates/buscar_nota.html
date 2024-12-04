@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Buscar Nota</h2>
+        <p>Pesquise por número da nota:</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <form id="formBusca" class="card">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="numero" class="form-label">Número da Nota</label>
+                    <input type="number" class="form-control" id="numero" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div id="resultadoBusca" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Resultado da Busca</h5>
+                </div>
+                <div class="card-body">
+                    <div id="detalhesNota">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" onclick="imprimirNota()">Imprimir</button>
+                    <button class="btn btn-secondary" onclick="exportarPDF()">Exportar PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Impressão -->
+<div class="modal fade" id="modalImpressao" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Visualização de Impressão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="conteudoImpressao">
+                <!-- Será preenchido via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('formBusca').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const numero = document.getElementById('numero').value;
+    
+    fetch(`/api/buscar_nota/${numero}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarResultado(data.nota);
+            } else {
+                alert(data.message || 'Nota não encontrada.');
+            }
+        });
+});
+
+function mostrarResultado(nota) {
+    const detalhesNota = document.getElementById('detalhesNota');
+    detalhesNota.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Informações Básicas</h6>
+                <p><strong>Número:</strong> ${nota.numero}</p>
+                <p><strong>Data:</strong> ${new Date(nota.data_criacao).toLocaleDateString()}</p>
+                <p><strong>Produtor:</strong> ${nota.produtor}</p>
+                <p><strong>Estado:</strong> ${nota.estado}</p>
+                <p><strong>Tipo de Ave:</strong> ${nota.tipo_ave}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Informações da Carga</h6>
+                <p><strong>Quantidade de Aves:</strong> ${nota.aves_recebidas}</p>
+                <p><strong>Peso Total:</strong> ${nota.peso_total} kg</p>
+                <p><strong>Valor por Kg:</strong> R$ ${nota.valor_kg}</p>
+                <p><strong>Valor Total:</strong> R$ ${nota.valor_total}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <h6>Informações do Transporte</h6>
+                <p><strong>Motorista:</strong> ${nota.motorista}</p>
+                <p><strong>Transportadora:</strong> ${nota.transportadora}</p>
+                <p><strong>Placa:</strong> ${nota.placa_veiculo}</p>
+                <p><strong>Valor do Frete:</strong> R$ ${nota.valor_frete}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Status da Nota</h6>
+                <p><strong>Situação:</strong> 
+                    <span class="badge ${nota.verificado_financeiro ? 'bg-success' : 'bg-warning'}">
+                        ${nota.verificado_financeiro ? 'Aprovada pelo Financeiro' : 'Pendente de Aprovação'}
+                    </span>
+                </p>
+                <p><strong>Autorizado por:</strong> ${nota.autorizado_por_nome || 'Pendente'}</p>
+                <p><strong>Data da Autorização:</strong> ${nota.data_autorizacao ? new Date(nota.data_autorizacao).toLocaleDateString() : 'Pendente'}</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('resultadoBusca').style.display = 'block';
+}
+
+function imprimirNota() {
+    const conteudoImpressao = document.getElementById('detalhesNota').cloneNode(true);
+    document.getElementById('conteudoImpressao').innerHTML = `
+        <div class="text-center mb-4">
+            <h3>RECEBIMENTO DE AVES</h3>
+            <h4>Comprovante de Recebimento</h4>
+        </div>
+        ${conteudoImpressao.innerHTML}
+    `;
+    new bootstrap.Modal(document.getElementById('modalImpressao')).show();
+}
+
+function exportarPDF() {
+    // Implementar exportação para PDF
+    alert('Funcionalidade em desenvolvimento');
+}
+</script>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #modalImpressao, #modalImpressao * {
+        visibility: visible;
+    }
+    #modalImpressao {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+</style>
+{% endblock %}

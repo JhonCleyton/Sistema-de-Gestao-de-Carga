@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gerenciamento de Usuários</h2>
+        <a href="{{ url_for('novo_usuario') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Usuário
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Nome Completo</th>
+                            <th>Email</th>
+                            <th>Nível</th>
+                            <th>Status</th>
+                            <th>Data de Criação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in usuarios %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.nome_completo or '-' }}</td>
+                            <td>{{ user.email or '-' }}</td>
+                            <td>
+                                {% if user.role == 'diretoria' %}
+                                    <span class="badge bg-danger">Diretoria</span>
+                                {% elif user.role == 'financeiro' %}
+                                    <span class="badge bg-success">Financeiro</span>
+                                {% else %}
+                                    <span class="badge bg-primary">Usuário</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.ativo %}
+                                    <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.data_criacao.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('editar_usuario', id=user.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if user.id != current_user.id %}
+                                    <a href="{{ url_for('desativar_usuario', id=user.id) }}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Tem certeza que deseja desativar este usuário?')">
+                                        <i class="fas fa-user-slash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

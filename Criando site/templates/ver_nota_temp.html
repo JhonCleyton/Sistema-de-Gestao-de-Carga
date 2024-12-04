@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}" media="print">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Nota #{{ nota.numero }}</h2>
+        <button onclick="window.print()" class="btn btn-primary no-print">
+            <i class="fas fa-print"></i> Imprimir
+        </button>
+    </div>
+
+    <div class="print-container">
+        <!-- Cabeçalho -->
+        <table class="print-table">
+            <tr>
+                <td colspan="2">
+                    <strong>TIPO DE AVE:</strong>
+                    {% if nota.tipo_ave == 'G.LEVE' %}[X]{% else %}[ ]{% endif %} G.LEVE
+                    {% if nota.tipo_ave == 'G.MATRIZ' %}[X]{% else %}[ ]{% endif %} G.MATRIZ
+                </td>
+                <td><strong>Nº CARGAS:</strong> {{ nota.num_cargas }}</td>
+                <td colspan="2"><strong>Data de abate:</strong> {{ nota.data_abate.strftime('%d/%m/%Y') if nota.data_abate }}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>ORDEM:</strong> {{ nota.ordem_carga }}</td>
+                <td colspan="3"><strong>Dia da semana:</strong> {{ nota.dia_semana }}</td>
+            </tr>
+        </table>
+
+        <!-- Informações do Transporte -->
+        <table class="print-table">
+            <tr>
+                <td><strong>MOTORISTA:</strong> {{ nota.motorista }}</td>
+                <td><strong>KM SAÍDA:</strong> {{ nota.km_saida }}</td>
+                <td><strong>VLR. FRETE:</strong> R$ {{ "%.2f"|format(nota.valor_frete) }}</td>
+            </tr>
+            <tr>
+                <td><strong>TRANSPORTADOR:</strong> {{ nota.transportadora }}</td>
+                <td><strong>KM CHEG.:</strong> {{ nota.km_chegada }}</td>
+                <td><strong>PEDÁGIO:</strong> R$ {{ "%.2f"|format(nota.pedagios) }}</td>
+            </tr>
+            <tr>
+                <td><strong>PLACA:</strong> {{ nota.placa_veiculo }}</td>
+                <td><strong>KM RODA.:</strong> {{ nota.km_chegada - nota.km_saida if nota.km_chegada and nota.km_saida else '' }}</td>
+                <td><strong>OUTROS:</strong> R$ {{ "%.2f"|format(nota.outras_despesas) }}</td>
+            </tr>
+            <tr>
+                <td><strong>QUANT. CAIXAS:</strong> {{ nota.qtd_caixas }}</td>
+                <td colspan="2">
+                    <strong>FRETE:</strong>
+                    {% if nota.frete_status == 'A PAGAR' %}[X]{% else %}[ ]{% endif %} A PAGAR
+                    {% if nota.frete_status == 'INCLUSO' %}[X]{% else %}[ ]{% endif %} INCLUSO
+                </td>
+            </tr>
+        </table>
+
+        <!-- Documentação -->
+        <table class="print-table">
+            <tr>
+                <td colspan="2"><strong>PRODUTOR:</strong> {{ nota.produtor }}</td>
+                <td><strong>UF:</strong> {{ nota.estado }}</td>
+            </tr>
+            <tr>
+                <td><strong>NOTA FISCAL Nº:</strong> {{ nota.nota_fiscal }}</td>
+                <td colspan="2"><strong>DATA EMISSÃO:</strong> {{ nota.data_nf.strftime('%d/%m/%Y') if nota.data_nf }}</td>
+            </tr>
+            <tr>
+                <td><strong>GTA Nº:</strong> {{ nota.gta }}</td>
+                <td colspan="2"><strong>DATA EMISSÃO:</strong> {{ nota.data_gta.strftime('%d/%m/%Y') if nota.data_gta }}</td>
+            </tr>
+        </table>
+
+        <!-- Quantidades e Avarias -->
+        <table class="print-table">
+            <tr>
+                <td><strong>Nº AVES GRANJA:</strong> {{ nota.aves_granja }}</td>
+                <td><strong>AVES MORTAS:</strong> {{ nota.aves_mortas }}</td>
+                <td><strong>AVES RECEB.:</strong> {{ nota.aves_recebidas }}</td>
+            </tr>
+            <tr>
+                <td><strong>Nº AVES CONTADOR:</strong> {{ nota.aves_contador }}</td>
+                <td colspan="2"><strong>AGENCIADOR:</strong> {{ nota.agenciador }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <strong>CAIXAS VAZIAS:</strong>
+                    {% if nota.caixas_vazias %}SIM{% else %}NÃO{% endif %}
+                    <strong>QUANTIDADE:</strong> {{ nota.caixas_vazias }}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Pesos e Quebras -->
+        <table class="print-table">
+            <tr>
+                <td colspan="2"><strong>PESO NA GRANJA - KG:</strong> {{ "%.2f"|format(nota.peso_granja) }}</td>
+                <td colspan="2"><strong>PESO NO FRIGORÍFICO - KG:</strong> {{ "%.2f"|format(nota.peso_frigorifico) }}</td>
+            </tr>
+        </table>
+
+        <!-- Avarias -->
+        <table class="print-table">
+            <tr>
+                <td><strong>MORTALIDADE POR EXCESSO:</strong></td>
+                <td>SIM {% if nota.mortalidade_excesso %}[X]{% else %}[ ]{% endif %} NÃO {% if not nota.mortalidade_excesso %}[X]{% else %}[ ]{% endif %}</td>
+                <td><strong>ABATIMENTO KG:</strong> {{ "%.2f"|format(nota.mortalidade_excesso) }}</td>
+            </tr>
+            <tr>
+                <td><strong>AVES MOLHADAS NA GRANJA:</strong></td>
+                <td>SIM {% if nota.aves_molhadas_granja %}[X]{% else %}[ ]{% endif %} NÃO {% if not nota.aves_molhadas_granja %}[X]{% else %}[ ]{% endif %}</td>
+                <td><strong>ABATIMENTO KG:</strong> {{ "%.2f"|format(nota.aves_molhadas_granja) }}</td>
+            </tr>
+            <tr>
+                <td><strong>CHUVA NA ESTRADA:</strong></td>
+                <td>SIM {% if nota.aves_molhadas_chuva %}[X]{% else %}[ ]{% endif %} NÃO {% if not nota.aves_molhadas_chuva %}[X]{% else %}[ ]{% endif %}</td>
+                <td><strong>ABATIMENTO KG:</strong> {{ "%.2f"|format(nota.aves_molhadas_chuva) }}</td>
+            </tr>
+            <tr>
+                <td><strong>QUEBRA POR MAUS TRATOS:</strong></td>
+                <td>SIM {% if nota.quebra_maus_tratos %}[X]{% else %}[ ]{% endif %} NÃO {% if not nota.quebra_maus_tratos %}[X]{% else %}[ ]{% endif %}</td>
+                <td><strong>ABATIMENTO KG:</strong> {{ "%.2f"|format(nota.quebra_maus_tratos) }}</td>
+            </tr>
+            <tr>
+                <td><strong>AVES COM PAPO CHEIO:</strong></td>
+                <td>SIM {% if nota.aves_papo_cheio %}[X]{% else %}[ ]{% endif %} NÃO {% if not nota.aves_papo_cheio %}[X]{% else %}[ ]{% endif %}</td>
+                <td><strong>ABATIMENTO KG:</strong> {{ "%.2f"|format(nota.aves_papo_cheio) }}</td>
+            </tr>
+        </table>
+
+        <!-- Fechamento -->
+        <div class="print-section">
+            <div class="print-column">
+                <h5>FECHAMENTO DE FRETE</h5>
+                <table class="print-table">
+                    <tr>
+                        <td><strong>VALOR FRETE:</strong></td>
+                        <td>R$ {{ "%.2f"|format(nota.valor_frete) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COMBUSTÍVEL:</strong></td>
+                        <td>R$ {{ "%.2f"|format(nota.valor_combustivel) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ADIANTAMENTO:</strong></td>
+                        <td>R$ {{ "%.2f"|format(nota.adiantamento_frete) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>A PAGAR:</strong></td>
+                        <td>R$ {{ "%.2f"|format(nota.valor_frete - nota.valor_combustivel - nota.adiantamento_frete) }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="print-column">
+                <h5>FECHAMENTO DE PRODUTO</h5>
+                <table class="print-table">
+                    <tr>
+                        <td><strong>PESO:</strong></td>
+                        <td>{{ "%.2f"|format(nota.peso_frigorifico) }} kg</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VALOR KG:</strong></td>
+                        <td>R$ {{ "%.2f"|format(nota.valor_kg) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TOTAL:</strong></td>
+                        <td>R$ {{ "%.2f"|format(nota.calcular_valor_total()) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Autorizações -->
+        <div class="print-section">
+            <div class="print-column">
+                <h5>AUTORIZAÇÃO DIRETORIA</h5>
+                <table class="print-table">
+                    <tr>
+                        <td><strong>STATUS:</strong></td>
+                        <td>{% if nota.autorizada %}AUTORIZADO{% else %}PENDENTE{% endif %}</td>
+                    </tr>
+                    {% if nota.autorizada %}
+                    <tr>
+                        <td><strong>AUTORIZADO POR:</strong></td>
+                        <td>{{ nota.autorizado_por_usuario.nome_completo if nota.autorizado_por_usuario else nota.assinatura_autorizador }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DATA:</strong></td>
+                        <td>{{ nota.data_autorizacao.strftime('%d/%m/%Y %H:%M') if nota.data_autorizacao }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+            <div class="print-column">
+                <h5>AUTORIZAÇÃO FINANCEIRO</h5>
+                <table class="print-table">
+                    <tr>
+                        <td><strong>STATUS:</strong></td>
+                        <td>{% if nota.aprovado_financeiro %}APROVADO{% else %}PENDENTE{% endif %}</td>
+                    </tr>
+                    {% if nota.aprovado_financeiro %}
+                    <tr>
+                        <td><strong>APROVADO POR:</strong></td>
+                        <td>{{ nota.verificado_por_usuario.nome_completo if nota.verificado_por_usuario else 'Não informado' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DATA:</strong></td>
+                        <td>{{ nota.data_aprovacao_financeiro.strftime('%d/%m/%Y %H:%M') if nota.data_aprovacao_financeiro }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="print-section">
+            <strong>OBS:</strong>
+            <div class="obs-box">{{ nota.descricao_quebras }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

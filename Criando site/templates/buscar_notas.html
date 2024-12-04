@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Buscar Notas</h2>
+            <p class="text-muted">Pesquise por número da nota, motorista, placa ou produtor</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Buscar Notas</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="termo">Termo de busca</label>
+                                    <input type="text" class="form-control" id="termo" name="termo" value="{{ termo }}" 
+                                           placeholder="Produtor, motorista, GTA...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="data_inicio">Data Início</label>
+                                    <input type="date" class="form-control" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="data_fim">Data Fim</label>
+                                    <input type="date" class="form-control" id="data_fim" name="data_fim" value="{{ data_fim }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="todas" {% if status == 'todas' %}selected{% endif %}>Todas</option>
+                                        <option value="pendente" {% if status == 'pendente' %}selected{% endif %}>Pendentes</option>
+                                        <option value="autorizada" {% if status == 'autorizada' %}selected{% endif %}>Autorizadas</option>
+                                        <option value="financeiro" {% if status == 'financeiro' %}selected{% endif %}>Pendente Financeiro</option>
+                                        <option value="incompleta" {% if status == 'incompleta' %}selected{% endif %}>Incompletas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if termo %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Data</th>
+                                    <th>Motorista</th>
+                                    <th>Placa</th>
+                                    <th>Produtor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for nota in notas %}
+                                <tr>
+                                    <td>{{ nota.numero }}</td>
+                                    <td>{{ nota.data_criacao.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ nota.motorista }}</td>
+                                    <td>{{ nota.placa_veiculo }}</td>
+                                    <td>{{ nota.produtor }}</td>
+                                    <td>
+                                        {% if nota.aprovado_financeiro %}
+                                            <span class="badge bg-success">Aprovado Financeiro</span>
+                                        {% elif nota.autorizada %}
+                                            <span class="badge bg-info">Autorizada</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pendente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('ver_nota', id=nota.id) }}" class="btn btn-sm btn-info">Ver</a>
+                                        {% if not nota.autorizada and current_user.role == 'admin' %}
+                                            <a href="{{ url_for('autorizar_nota', id=nota.id) }}" class="btn btn-sm btn-success">Autorizar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Nenhuma nota encontrada com o termo "{{ termo }}"</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.7em;
+}
+
+.btn-sm {
+    margin: 0 0.2rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+</style>
+{% endblock %}

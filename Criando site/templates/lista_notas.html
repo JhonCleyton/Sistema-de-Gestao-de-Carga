@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Lista de Notas</h2>
+            <p class="text-muted">Visualize todas as notas do sistema</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="{{ url_for('lista_notas', status='todas') }}" 
+                   class="btn btn-outline-primary {% if status == 'todas' %}active{% endif %}">
+                    Todas
+                </a>
+                <a href="{{ url_for('lista_notas', status='pendente') }}"
+                   class="btn btn-outline-warning {% if status == 'pendente' %}active{% endif %}">
+                    Pendentes
+                </a>
+                <a href="{{ url_for('lista_notas', status='autorizada') }}"
+                   class="btn btn-outline-success {% if status == 'autorizada' %}active{% endif %}">
+                    Autorizadas
+                </a>
+                {% if current_user.role == 'financeiro' %}
+                <a href="{{ url_for('lista_notas', status='financeiro') }}"
+                   class="btn btn-outline-info {% if status == 'financeiro' %}active{% endif %}">
+                    Aguardando Financeiro
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Data</th>
+                                    <th>Motorista</th>
+                                    <th>Placa</th>
+                                    <th>Produtor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for nota in notas %}
+                                <tr>
+                                    <td>{{ nota.numero }}</td>
+                                    <td>{{ nota.data_criacao.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ nota.motorista }}</td>
+                                    <td>{{ nota.placa_veiculo }}</td>
+                                    <td>{{ nota.produtor }}</td>
+                                    <td>
+                                        {% if nota.aprovado_financeiro %}
+                                            <span class="badge bg-success">Aprovado Financeiro</span>
+                                        {% elif nota.autorizada %}
+                                            <span class="badge bg-info">Autorizada</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pendente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('ver_nota', id=nota.id) }}" class="btn btn-info btn-sm">Ver</a>
+                                        {% if current_user.can_edit_notes and not nota.autorizada and not nota.verificado_financeiro %}
+                                        <a href="{{ url_for('editar_nota', id=nota.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                        {% endif %}
+                                        {% if current_user.is_diretoria and not nota.autorizada %}
+                                        <a href="{{ url_for('autorizar_nota', id=nota.id) }}" class="btn btn-sign btn-sm">
+                                            <i class="fas fa-signature"></i> Autorizar
+                                        </a>
+                                        {% endif %}
+                                        {% if current_user.is_financeiro and nota.autorizada and not nota.verificado_financeiro %}
+                                        <a href="{{ url_for('aprovar_financeiro', id=nota.id) }}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check-double"></i> Aprovar
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Nenhuma nota encontrada</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.7em;
+}
+
+.btn-sm {
+    margin: 0 0.2rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.btn-group {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.btn-group .btn {
+    padding: 0.5rem 1rem;
+}
+</style>
+
+<script>
+function aprovarFinanceiro(id) {
+    if (confirm('Confirma a aprovação financeira desta nota?')) {
+        fetch(`/aprovar_financeiro/${id}`, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erro ao aprovar nota.');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

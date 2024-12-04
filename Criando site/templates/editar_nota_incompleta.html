@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Editar Nota #{{ nota.numero }}</h2>
+            <form method="POST" class="mt-4">
+                <div class="row">
+                    <!-- Informações Básicas -->
+                    <div class="col-md-6">
+                        <h4>Informações Básicas</h4>
+                        <div class="mb-3">
+                            <label for="tipo_ave" class="form-label">Tipo de Ave</label>
+                            <select class="form-select" id="tipo_ave" name="tipo_ave" required>
+                                <option value="G.LEVE" {% if nota.tipo_ave == 'G.LEVE' %}selected{% endif %}>G.LEVE</option>
+                                <option value="G.MATRIZ" {% if nota.tipo_ave == 'G.MATRIZ' %}selected{% endif %}>G.MATRIZ</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="produtor" class="form-label">Produtor</label>
+                            <input type="text" class="form-control" id="produtor" name="produtor" value="{{ nota.produtor }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <input type="text" class="form-control" id="estado" name="estado" value="{{ nota.estado }}">
+                        </div>
+                    </div>
+
+                    <!-- Informações de Transporte -->
+                    <div class="col-md-6">
+                        <h4>Informações de Transporte</h4>
+                        <div class="mb-3">
+                            <label for="motorista" class="form-label">Motorista</label>
+                            <input type="text" class="form-control" id="motorista" name="motorista" value="{{ nota.motorista }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="transportadora" class="form-label">Transportadora</label>
+                            <input type="text" class="form-control" id="transportadora" name="transportadora" value="{{ nota.transportadora }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="placa_veiculo" class="form-label">Placa do Veículo</label>
+                            <input type="text" class="form-control" id="placa_veiculo" name="placa_veiculo" value="{{ nota.placa_veiculo }}">
+                        </div>
+                    </div>
+
+                    <!-- Informações de Carga -->
+                    <div class="col-md-6">
+                        <h4>Informações de Carga</h4>
+                        <div class="mb-3">
+                            <label for="num_cargas" class="form-label">Número de Cargas</label>
+                            <input type="text" class="form-control" id="num_cargas" name="num_cargas" value="{{ nota.num_cargas }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ordem_carga" class="form-label">Ordem de Carga</label>
+                            <input type="text" class="form-control" id="ordem_carga" name="ordem_carga" value="{{ nota.ordem_carga }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="qtd_caixas" class="form-label">Quantidade de Caixas</label>
+                            <input type="number" class="form-control" id="qtd_caixas" name="qtd_caixas" value="{{ nota.qtd_caixas }}">
+                        </div>
+                    </div>
+
+                    <!-- Informações de Documentação -->
+                    <div class="col-md-6">
+                        <h4>Documentação</h4>
+                        <div class="mb-3">
+                            <label for="nota_fiscal" class="form-label">Nota Fiscal</label>
+                            <input type="text" class="form-control" id="nota_fiscal" name="nota_fiscal" value="{{ nota.nota_fiscal }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="data_nf" class="form-label">Data NF</label>
+                            <input type="date" class="form-control" id="data_nf" name="data_nf" value="{{ nota.data_nf.strftime('%Y-%m-%d') if nota.data_nf else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="gta" class="form-label">GTA</label>
+                            <input type="text" class="form-control" id="gta" name="gta" value="{{ nota.gta }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="data_gta" class="form-label">Data GTA</label>
+                            <input type="date" class="form-control" id="data_gta" name="data_gta" value="{{ nota.data_gta.strftime('%Y-%m-%d') if nota.data_gta else '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Informações de Aves -->
+                    <div class="col-md-6">
+                        <h4>Contagem de Aves</h4>
+                        <div class="mb-3">
+                            <label for="aves_granja" class="form-label">Aves na Granja</label>
+                            <input type="number" class="form-control" id="aves_granja" name="aves_granja" value="{{ nota.aves_granja }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aves_mortas" class="form-label">Aves Mortas</label>
+                            <input type="number" class="form-control" id="aves_mortas" name="aves_mortas" value="{{ nota.aves_mortas }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aves_recebidas" class="form-label">Aves Recebidas</label>
+                            <input type="number" class="form-control" id="aves_recebidas" name="aves_recebidas" value="{{ nota.aves_recebidas }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aves_contador" class="form-label">Contador de Aves</label>
+                            <input type="number" class="form-control" id="aves_contador" name="aves_contador" value="{{ nota.aves_contador }}">
+                        </div>
+                    </div>
+
+                    <!-- Informações de Peso -->
+                    <div class="col-md-6">
+                        <h4>Informações de Peso</h4>
+                        <div class="mb-3">
+                            <label for="peso_granja" class="form-label">Peso na Granja</label>
+                            <input type="number" step="0.01" class="form-control" id="peso_granja" name="peso_granja" value="{{ nota.peso_granja }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="peso_frigorifico" class="form-label">Peso no Frigorífico</label>
+                            <input type="number" step="0.01" class="form-control" id="peso_frigorifico" name="peso_frigorifico" value="{{ nota.peso_frigorifico }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="valor_kg" class="form-label">Valor por KG</label>
+                            <input type="number" step="0.01" class="form-control" id="valor_kg" name="valor_kg" value="{{ nota.valor_kg }}">
+                        </div>
+                    </div>
+
+                    <!-- Informações de Quebras -->
+                    <div class="col-md-6">
+                        <h4>Quebras e Perdas</h4>
+                        <div class="mb-3">
+                            <label for="mortalidade_excesso" class="form-label">Mortalidade em Excesso</label>
+                            <input type="number" step="0.01" class="form-control" id="mortalidade_excesso" name="mortalidade_excesso" value="{{ nota.mortalidade_excesso }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aves_molhadas_granja" class="form-label">Aves Molhadas na Granja</label>
+                            <input type="number" step="0.01" class="form-control" id="aves_molhadas_granja" name="aves_molhadas_granja" value="{{ nota.aves_molhadas_granja }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aves_molhadas_chuva" class="form-label">Aves Molhadas por Chuva</label>
+                            <input type="number" step="0.01" class="form-control" id="aves_molhadas_chuva" name="aves_molhadas_chuva" value="{{ nota.aves_molhadas_chuva }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="quebra_maus_tratos" class="form-label">Quebra por Maus Tratos</label>
+                            <input type="number" step="0.01" class="form-control" id="quebra_maus_tratos" name="quebra_maus_tratos" value="{{ nota.quebra_maus_tratos }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aves_papo_cheio" class="form-label">Aves com Papo Cheio</label>
+                            <input type="number" step="0.01" class="form-control" id="aves_papo_cheio" name="aves_papo_cheio" value="{{ nota.aves_papo_cheio }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="outras_quebras" class="form-label">Outras Quebras</label>
+                            <input type="number" step="0.01" class="form-control" id="outras_quebras" name="outras_quebras" value="{{ nota.outras_quebras }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao_quebras" class="form-label">Descrição das Quebras</label>
+                            <textarea class="form-control" id="descricao_quebras" name="descricao_quebras" rows="3">{{ nota.descricao_quebras }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Informações Financeiras -->
+                    <div class="col-md-6">
+                        <h4>Informações Financeiras</h4>
+                        <div class="mb-3">
+                            <label for="valor_frete" class="form-label">Valor do Frete</label>
+                            <input type="number" step="0.01" class="form-control" id="valor_frete" name="valor_frete" value="{{ nota.valor_frete }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="pedagios" class="form-label">Pedágios</label>
+                            <input type="number" step="0.01" class="form-control" id="pedagios" name="pedagios" value="{{ nota.pedagios }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="outras_despesas" class="form-label">Outras Despesas</label>
+                            <input type="number" step="0.01" class="form-control" id="outras_despesas" name="outras_despesas" value="{{ nota.outras_despesas }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="adiantamento_frete" class="form-label">Adiantamento do Frete</label>
+                            <input type="number" step="0.01" class="form-control" id="adiantamento_frete" name="adiantamento_frete" value="{{ nota.adiantamento_frete }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="valor_combustivel" class="form-label">Valor do Combustível</label>
+                            <input type="number" step="0.01" class="form-control" id="valor_combustivel" name="valor_combustivel" value="{{ nota.valor_combustivel }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <a href="{{ url_for('notas_incompletas') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
