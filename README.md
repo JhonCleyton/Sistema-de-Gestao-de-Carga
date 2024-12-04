@@ -124,15 +124,14 @@ python app.py
 
 ## 🤝 Suporte
 
-Para suporte ou dúvidas sobre o sistema, entre em contato com a equipe de desenvolvimento através do email [seu-email@dominio.com]
+Para suporte ou dúvidas sobre o sistema, entre em contato com a equipe de desenvolvimento através do email jhon.freire@ftc.edu.br
 
 ## 📝 Licença
 
-Este projeto está sob a licença [TIPO_DE_LICENCA]. Veja o arquivo LICENSE.md para mais detalhes.
 
 ## 🔄 Versionamento
 
-Utilizamos [SemVer](http://semver.org/) para controle de versão. Para ver as versões disponíveis, acesse as [tags neste repositório](https://github.com/seu-usuario/seu-repositorio/tags).
+Utilizamos [SemVer](http://semver.org/) para controle de versão. 
 
 ---
-Desenvolvido com ❤️ pela sua equipe
+Desenvolvido por Jhon Cleyton Souza Freire
